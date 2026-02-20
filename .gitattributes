@@ -1,0 +1,6 @@
+# Normalize line endings to reduce noisy diffs/conflicts across environments
+* text=auto eol=lf
+
+# Runtime / generated-like text where additive merges are acceptable
+project/README.md merge=union
+project/prompts/*.txt merge=union

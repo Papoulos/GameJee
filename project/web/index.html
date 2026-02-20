@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GameJee GM Web</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; background: #111827; color: #e5e7eb; }
+    .card { background: #1f2937; border: 1px solid #374151; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
+    #chat { min-height: 280px; white-space: pre-wrap; line-height: 1.45; }
+    .user { color: #93c5fd; }
+    .gm { color: #d1fae5; }
+    .system { color: #fcd34d; }
+    input, button, select { border-radius: 8px; border: 1px solid #4b5563; }
+    input, select { padding: 0.7rem; background: #0f172a; color: #e5e7eb; }
+    button { padding: 0.7rem 1rem; background: #2563eb; color: #fff; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+    .meta { font-size: 0.9rem; color: #9ca3af; }
+    .row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    #action { width: 72%; }
+    #doc-source { min-width: 360px; flex: 1; }
+  </style>
+</head>
+<body>
+  <h1>GameJee — Interface Web</h1>
+  <p class="meta">Discutez avec le GM depuis votre navigateur (serveur local).</p>
+
+  <div class="card">
+    <div id="chat"></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <input id="action" type="text" placeholder="Que faites-vous ?" />
+      <button id="send">Envoyer</button>
+      <button id="reset" style="background:#b91c1c;">Réinitialiser la mémoire</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Importer vos documents</h3>
+    <p class="meta">Vous pouvez intégrer vos propres fichiers .pdf, .txt ou .md (règles/scénario).</p>
+    <div class="row" style="margin-bottom: 0.5rem;">
+      <select id="doc-type">
+        <option value="rules">Règles</option>
+        <option value="scenario">Scénario</option>
+      </select>
+      <input id="doc-title" type="text" placeholder="Titre (optionnel)" />
+    </div>
+    <div class="row">
+      <input id="doc-source" type="text" placeholder="Chemin du fichier sur la machine qui exécute le serveur (ex: /home/moi/regles.pdf)" />
+      <button id="import-doc">Importer</button>
+    </div>
+  </div>
+
+  <script>
+    const chat = document.getElementById('chat');
+    const actionInput = document.getElementById('action');
+
+    function appendMessage(cls, text) {
+      const line = document.createElement('div');
+      line.className = cls;
+      line.textContent = text;
+      chat.appendChild(line);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    async function sendAction(action, confirmReset = false) {
+      if (!action.trim()) return;
+      appendMessage('user', `> ${action}`);
+      const res = await fetch('/api/action', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ action, confirm_reset: confirmReset })
+      });
+      const data = await res.json();
+
+      if (data.status === 'guard_veto') {
+        appendMessage('gm', `[Veto Garde] ${data.message}`);
+      } else if (data.status === 'world_veto') {
+        appendMessage('gm', `[Veto Monde] ${data.message}`);
+      } else {
+        appendMessage('gm', data.message || 'Pas de réponse.');
+      }
+    }
+
+    async function importDocument() {
+      const type = document.getElementById('doc-type').value;
+      const source = document.getElementById('doc-source').value.trim();
+      const title = document.getElementById('doc-title').value.trim();
+      if (!source) {
+        appendMessage('system', 'Chemin du document requis pour importer.');
+        return;
+      }
+      appendMessage('system', `Import en cours (${type}) : ${source}`);
+      const res = await fetch('/api/import', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ type, source, title })
+      });
+      const data = await res.json();
+      if (data.status === 'ok') {
+        appendMessage('system', `✅ ${data.message}`);
+      } else {
+        appendMessage('system', `❌ Import échoué : ${data.message || 'Erreur inconnue'}`);
+      }
+    }
+
+    document.getElementById('send').addEventListener('click', async () => {
+      const action = actionInput.value;
+      actionInput.value = '';
+      await sendAction(action);
+    });
+
+    actionInput.addEventListener('keydown', async (e) => {
+      if (e.key === 'Enter') {
+        const action = actionInput.value;
+        actionInput.value = '';
+        await sendAction(action);
+      }
+    });
+
+    document.getElementById('reset').addEventListener('click', async () => {
+      const ok = window.confirm('Réinitialiser la mémoire depuis le template ?');
+      if (!ok) return;
+      await sendAction('reset', true);
+    });
+
+    document.getElementById('import-doc').addEventListener('click', importDocument);
+
+    appendMessage('gm', 'GM Web prêt. Saisissez une action pour commencer.');
+  </script>
+</body>
+</html>
