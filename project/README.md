@@ -24,6 +24,9 @@ A minimal Python 3.10+ tabletop RPG Game Master system using local Ollama models
 ```text
 project/
 ├─ main.py
+├─ web_app.py
+├─ web/
+│  └─ index.html
 ├─ agents/
 │  ├─ narrator.py
 │  ├─ rules.py
@@ -59,6 +62,21 @@ If `memory/game_state.json` is missing, it is auto-created from `memory/game_sta
 Type actions at the prompt. Type `quit` to save and exit.
 
 Type `reset` in-game to restore `memory/game_state.json` from `memory/game_state.template.json` (aliases accepted: `/reset`, `reinitialiser`, `réinitialiser`, `reste`).
+
+
+## Web Interface
+
+If you prefer chatting in a browser instead of CLI:
+
+```bash
+python3 web_app.py
+```
+
+Then open `http://127.0.0.1:8000`.
+
+- Enter actions in the input box and press Enter or **Send**.
+- Use **Reset Memory** to restore from `memory/game_state.template.json`.
+- This web UI uses the same orchestrator and memory file as the CLI.
 
 ## Import Rules or Scenario Content
 
