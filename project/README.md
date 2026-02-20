@@ -78,6 +78,14 @@ Then open `http://127.0.0.1:8000`.
 - Use **Reset Memory** to restore from `memory/game_state.template.json`.
 - This web UI uses the same orchestrator and memory file as the CLI.
 
+If you get an error like `IndentationError` when launching `web_app.py`, your local `main.py` is likely partially merged/corrupted. Run:
+
+```bash
+python3 -m py_compile main.py
+```
+
+Then re-open `main.py` and resolve conflict markers or re-sync your branch from GitHub before retrying.
+
 ## Import Rules or Scenario Content
 
 You can import local files into the persistent game state:
