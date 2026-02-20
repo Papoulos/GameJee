@@ -16,13 +16,11 @@ class WorldAuthorityAgent:
         player_action: str,
         observable_context: Dict[str, Any],
         hidden_world_context: Dict[str, Any],
-        scenario_context: Dict[str, Any],
     ) -> Dict[str, Any]:
         payload = {
             "player_action": player_action,
             "observable_context": observable_context,
             "hidden_world_context": hidden_world_context,
-            "scenario_context": scenario_context,
             # Future integration: query World & Lore Vector DB here.
             # Future integration: query Scenario & Secrets Vector DB here.
             "required_output": {
