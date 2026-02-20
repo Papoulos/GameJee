@@ -56,7 +56,6 @@ class Orchestrator:
         self.root = root
         self.memory = MemoryAgent(memory_path)
         self.template_path = root / "memory" / "game_state.template.json"
-        self.memory = MemoryAgent(memory_path)
         self.guard = GuardAgent(ollama_generate, load_text(prompts_dir / "guard.txt"))
         self.rules = RulesAgent(ollama_generate, load_text(prompts_dir / "rules.txt"))
         self.world = WorldAuthorityAgent(ollama_generate, load_text(prompts_dir / "world.txt"))
@@ -168,12 +167,6 @@ class Orchestrator:
         print("Local GM prototype started. Type 'quit' to exit.")
 
         while True:
-    def run(self) -> None:
-        state = self.memory.load()
-        print("Local GM prototype started. Type 'quit' to exit.")
-
-        while True:
-            observable = self.memory.get_observable_context(state)
             print("\nWhat do you do?")
             action = input("> ").strip()
             if not action:
@@ -200,83 +193,6 @@ class Orchestrator:
                 print(f"\n{result.get('message', '')}")
             else:
                 print(result.get("message", "No output."))
-                self.memory.save(state)
-                print("Game saved. Goodbye.")
-                break
-            normalized_action = action.casefold()
-            if normalized_action in {"reset", "/reset", "réinitialiser", "reinitialiser", "reste"}:
-                confirmation = input("Type RESET to confirm memory reset: ").strip()
-                if confirmation.upper() == "RESET":
-                    template = Path(__file__).resolve().parent / "memory" / "game_state.template.json"
-                    state = self.memory.reset_from_template(template)
-                    print("Memory reset complete.")
-                else:
-                    print("Reset cancelled.")
-                continue
-
-            guard_result = self.guard.review_action(action, observable)
-            if not guard_result.get("allowed", False):
-                print(f"\n[Guard veto] {guard_result.get('reason', 'Action rejected.')}")
-                state.setdefault("log", []).append(
-                    {
-                        "action": action,
-                        "guard": guard_result,
-                        "result": "blocked",
-                    }
-                )
-                self.memory.save(state)
-                continue
-
-            hidden_context = state.get("hidden", {})
-            scenario_context = state.get("scenario", {})
-            world_result = self.world.validate_action(
-                action,
-                observable,
-                hidden_context,
-                scenario_context,
-            )
-            world_result = self.world.validate_action(action, observable, hidden_context)
-            if not world_result.get("plausible", False):
-                print(f"\n[World veto] {world_result.get('reason', 'Action is implausible.')}")
-                state.setdefault("log", []).append(
-                    {
-                        "action": action,
-                        "guard": guard_result,
-                        "world": world_result,
-                        "result": "implausible",
-                    }
-                )
-                self.memory.save(state)
-                continue
-
-            rules_context = state.get("rules", {})
-            rules_result = self.rules.evaluate_action(
-                action,
-                observable,
-                world_result,
-                rules_context,
-            )
-            rules_result = self.rules.evaluate_action(action, observable, world_result)
-            self._apply_effects(state, rules_result, world_result)
-            state.setdefault("log", []).append(
-                {
-                    "action": action,
-                    "guard": guard_result,
-                    "world": world_result,
-                    "rules": rules_result,
-                    "result": "resolved",
-                }
-            )
-            self.memory.save(state)
-
-            fresh_observable = self.memory.get_observable_context(state)
-            narration = self.narrator.narrate_turn(
-                fresh_observable,
-                action,
-                guard_result,
-                rules_result,
-            )
-            print(f"\n{narration}")
 
     def _apply_effects(
         self,

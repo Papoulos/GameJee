@@ -1,17 +1,35 @@
 from __future__ import annotations
 
+import importlib
 import json
+import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
-
-from main import Orchestrator
 
 HOST = "0.0.0.0"
 PORT = 8000
 
 
+def build_orchestrator():
+    """Import orchestrator safely to provide actionable diagnostics on broken local merges."""
+    try:
+        main_module = importlib.import_module("main")
+    except (IndentationError, SyntaxError) as exc:
+        print("Failed to import main.py (syntax/indentation error).")
+        print(f"Details: {exc}")
+        print("Run from project/: python3 -m py_compile main.py")
+        print("If it fails, resolve merge markers or re-sync main.py from GitHub.")
+        sys.exit(1)
+    except ModuleNotFoundError as exc:
+        print(f"Module import error: {exc}")
+        print("Run this script from the project/ directory: python3 web_app.py")
+        sys.exit(1)
+
+    return main_module.Orchestrator(Path(__file__).resolve().parent)
+
+
 class WebHandler(BaseHTTPRequestHandler):
-    orchestrator = Orchestrator(Path(__file__).resolve().parent)
+    orchestrator = build_orchestrator()
     index_path = Path(__file__).resolve().parent / "web" / "index.html"
 
     def _send_json(self, payload: dict, status: int = 200) -> None:

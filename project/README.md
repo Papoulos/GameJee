@@ -86,6 +86,26 @@ python3 -m py_compile main.py
 
 Then re-open `main.py` and resolve conflict markers or re-sync your branch from GitHub before retrying.
 
+Quick re-sync (from repo root), if needed:
+
+```bash
+git fetch origin
+git checkout -- project/main.py project/web_app.py project/web/index.html
+git pull --rebase
+```
+
+Or use the helper script from repo root to auto-restore key files from Git HEAD:
+
+```bash
+python3 project/repair_local_files.py
+```
+
+Quick check-only mode:
+
+```bash
+python3 project/repair_local_files.py --check
+```
+
 ## Import Rules or Scenario Content
 
 You can import local files into the persistent game state:

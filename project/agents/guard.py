@@ -18,7 +18,6 @@ class GuardAgent:
         "noclip",
         "fly to the moon",
     }
-    """Validates player intent against observable context and tone constraints."""
 
     def __init__(self, llm_callable, prompt_text: str) -> None:
         self.llm = llm_callable
@@ -92,13 +91,4 @@ class GuardAgent:
                 "block_category": "none",
                 "reason": "Guard output invalid JSON; defaulting to permissive mode.",
                 "risk_level": "low",
-            allowed = bool(data.get("allowed", False))
-            reason = str(data.get("reason", "Action rejected by Guard Agent."))
-            risk_level = str(data.get("risk_level", "medium"))
-            return {"allowed": allowed, "reason": reason, "risk_level": risk_level}
-        except json.JSONDecodeError:
-            return {
-                "allowed": False,
-                "reason": "Guard output was invalid. Action blocked for safety.",
-                "risk_level": "high",
             }

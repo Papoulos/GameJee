@@ -9,14 +9,6 @@ Rules:
 - You must NOT block actions only because they are strange, risky, chaotic, or contrary to story tone.
 - If uncertain, allow the action.
 - Return JSON only.
-Your job is to protect physical plausibility and anti-meta-gaming constraints.
-
-Rules:
-- You ONLY receive observable context.
-- You must block actions that require hidden knowledge.
-- You must block physically impossible actions.
-- You must block actions that break established tone.
-- You must return JSON only.
 - Do not narrate story text.
 
 Output schema:
