@@ -116,6 +116,12 @@ python3 import_content.py --type rules --source /path/to/rules.pdf --title "Core
 python3 import_content.py --type scenario --source /path/to/scenario.pdf --title "Chapter 1"
 ```
 
+From the web UI, you can also import your own documents directly:
+- choose **Règles** or **Scénario**
+- provide a local file path on the machine running `web_app.py`
+- optional title
+- click **Importer**
+
 Notes:
 - Supports `.pdf`, `.txt`, `.md`.
 - PDF import uses local `pdftotext` (from poppler-utils).
