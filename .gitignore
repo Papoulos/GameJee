@@ -1,0 +1,5 @@
+# Runtime game state is local and should not be versioned to avoid merge conflicts
+project/memory/game_state.json
+
+# Imported/cached source content generated at runtime
+project/memory/library/
