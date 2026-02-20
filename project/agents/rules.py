@@ -17,6 +17,7 @@ class RulesAgent:
         player_action: str,
         observable_context: Dict[str, Any],
         world_validation: Dict[str, Any],
+        rules_context: Dict[str, Any],
     ) -> Dict[str, Any]:
         roll = randint(1, 20)
         payload = {
@@ -24,6 +25,7 @@ class RulesAgent:
             "d20_roll": roll,
             "observable_context": observable_context,
             "world_validation": world_validation,
+            "rules_context": rules_context,
             "required_output": {
                 "outcome": "success|partial_success|failure",
                 "difficulty": "int",

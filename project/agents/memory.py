@@ -15,6 +15,12 @@ class MemoryAgent:
 
     def load(self) -> Dict[str, Any]:
         if not self.path.exists():
+            template = self.path.with_name("game_state.template.json")
+            if template.exists():
+                with template.open("r", encoding="utf-8") as f:
+                    state = json.load(f)
+                self.save(state)
+                return state
             raise FileNotFoundError(f"Game state file not found: {self.path}")
         with self.path.open("r", encoding="utf-8") as f:
             return json.load(f)
@@ -22,6 +28,15 @@ class MemoryAgent:
     def save(self, state: Dict[str, Any]) -> None:
         with self.path.open("w", encoding="utf-8") as f:
             json.dump(state, f, indent=2, ensure_ascii=False)
+
+    def reset_from_template(self, template_path: str | Path) -> Dict[str, Any]:
+        template = Path(template_path)
+        if not template.exists():
+            raise FileNotFoundError(f"Template state not found: {template}")
+        with template.open("r", encoding="utf-8") as f:
+            state = json.load(f)
+        self.save(state)
+        return state
 
     def get_observable_context(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """
