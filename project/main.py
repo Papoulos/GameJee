@@ -72,16 +72,6 @@ class Orchestrator:
                 self.memory.save(state)
                 print("Game saved. Goodbye.")
                 break
-            normalized_action = action.casefold()
-            if normalized_action in {"reset", "/reset", "réinitialiser", "reinitialiser", "reste"}:
-                confirmation = input("Type RESET to confirm memory reset: ").strip()
-                if confirmation.upper() == "RESET":
-                    template = Path(__file__).resolve().parent / "memory" / "game_state.template.json"
-                    state = self.memory.reset_from_template(template)
-                    print("Memory reset complete.")
-                else:
-                    print("Reset cancelled.")
-                continue
 
             guard_result = self.guard.review_action(action, observable)
             if not guard_result.get("allowed", False):
@@ -97,13 +87,7 @@ class Orchestrator:
                 continue
 
             hidden_context = state.get("hidden", {})
-            scenario_context = state.get("scenario", {})
-            world_result = self.world.validate_action(
-                action,
-                observable,
-                hidden_context,
-                scenario_context,
-            )
+            world_result = self.world.validate_action(action, observable, hidden_context)
             if not world_result.get("plausible", False):
                 print(f"\n[World veto] {world_result.get('reason', 'Action is implausible.')}")
                 state.setdefault("log", []).append(
@@ -117,13 +101,7 @@ class Orchestrator:
                 self.memory.save(state)
                 continue
 
-            rules_context = state.get("rules", {})
-            rules_result = self.rules.evaluate_action(
-                action,
-                observable,
-                world_result,
-                rules_context,
-            )
+            rules_result = self.rules.evaluate_action(action, observable, world_result)
             self._apply_effects(state, rules_result, world_result)
             state.setdefault("log", []).append(
                 {

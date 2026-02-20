@@ -52,18 +52,6 @@
     "accepted_missing_caravan_job": false,
     "secret_bandit_leader_identity_known": false
   },
-  "rules": {
-    "source_documents": [],
-    "active_summary": [
-      "Default prototype mode: resolve actions with d20 and reasonable consequences."
-    ]
-  },
-  "scenario": {
-    "source_documents": [],
-    "active_summary": [
-      "Current hook: a missing caravan may be connected to bandit activity north of Mossgate."
-    ]
-  },
   "hidden": {
     "scenario_secrets": {
       "bandit_leader": "Innkeeper Brann",

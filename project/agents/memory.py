@@ -23,15 +23,6 @@ class MemoryAgent:
         with self.path.open("w", encoding="utf-8") as f:
             json.dump(state, f, indent=2, ensure_ascii=False)
 
-    def reset_from_template(self, template_path: str | Path) -> Dict[str, Any]:
-        template = Path(template_path)
-        if not template.exists():
-            raise FileNotFoundError(f"Template state not found: {template}")
-        with template.open("r", encoding="utf-8") as f:
-            state = json.load(f)
-        self.save(state)
-        return state
-
     def get_observable_context(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """
         Return only information a player character could reasonably observe.
