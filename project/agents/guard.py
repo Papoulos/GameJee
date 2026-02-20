@@ -5,7 +5,7 @@ from typing import Any, Dict
 
 
 class GuardAgent:
-    """Validates player intent against observable context and impossibility constraints."""
+    """Validates player intent against observable context and tone constraints."""
 
     def __init__(self, llm_callable, prompt_text: str) -> None:
         self.llm = llm_callable

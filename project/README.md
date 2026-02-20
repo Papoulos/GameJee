@@ -16,7 +16,6 @@ A minimal Python 3.10+ tabletop RPG Game Master system using local Ollama models
 - Ollama-only LLM backend via standard library HTTP calls
 - No external Python dependencies
 - Ready hooks for future vector database integration
-- Optional local import of rules/scenario documents from PDF/TXT/MD
 
 ## Project Layout
 
@@ -55,20 +54,6 @@ python3 main.py
 
 Type actions at the prompt. Type `quit` to save and exit.
 
-## Import Rules or Scenario Content
-
-You can import local files into the persistent game state:
-
-```bash
-python3 import_content.py --type rules --source /path/to/rules.pdf --title "Core Rules"
-python3 import_content.py --type scenario --source /path/to/scenario.pdf --title "Chapter 1"
-```
-
-Notes:
-- Supports `.pdf`, `.txt`, `.md`.
-- PDF import uses local `pdftotext` (from poppler-utils).
-- Imported text is cached under `memory/library/` and summarized into `game_state.json` as active references.
-
 ## How the Turn Flow Works
 
 1. Orchestrator loads full state from Memory Agent.
@@ -84,4 +69,3 @@ Notes:
 - Agents never write JSON directly.
 - Prompts are written in English and enforce role boundaries.
 - Vector DB integration points are marked in `agents/world.py` comments.
-- Guard only blocks impossible/meta-gaming actions; it does not reject creative actions solely for tone.

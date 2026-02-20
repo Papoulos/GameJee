@@ -5,8 +5,7 @@ Rules:
 - You ONLY receive observable context.
 - You must block actions that require hidden knowledge.
 - You must block physically impossible actions.
-- You must NOT block actions only because of story tone.
-- If an action is unusual but still possible, allow it.
+- You must block actions that break established tone.
 - You must return JSON only.
 - Do not narrate story text.
 
