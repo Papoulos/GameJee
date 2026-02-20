@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GameJee Web GM</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; background: #111827; color: #e5e7eb; }
+    .card { background: #1f2937; border: 1px solid #374151; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
+    #chat { min-height: 280px; white-space: pre-wrap; line-height: 1.45; }
+    .user { color: #93c5fd; }
+    .gm { color: #d1fae5; }
+    input, button { border-radius: 8px; border: 1px solid #4b5563; }
+    input { width: 72%; padding: 0.7rem; background: #0f172a; color: #e5e7eb; }
+    button { padding: 0.7rem 1rem; background: #2563eb; color: #fff; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+    .meta { font-size: 0.9rem; color: #9ca3af; }
+  </style>
+</head>
+<body>
+  <h1>GameJee — Web Interface</h1>
+  <p class="meta">Discuss with the GM from your browser (local server).</p>
+
+  <div class="card">
+    <div id="chat"></div>
+  </div>
+
+  <div class="card">
+    <input id="action" type="text" placeholder="What do you do?" />
+    <button id="send">Send</button>
+    <button id="reset" style="background:#b91c1c;">Reset Memory</button>
+  </div>
+
+  <script>
+    const chat = document.getElementById('chat');
+    const actionInput = document.getElementById('action');
+
+    function appendMessage(cls, text) {
+      const line = document.createElement('div');
+      line.className = cls;
+      line.textContent = text;
+      chat.appendChild(line);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    async function sendAction(action, confirmReset = false) {
+      if (!action.trim()) return;
+      appendMessage('user', `> ${action}`);
+      const res = await fetch('/api/action', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ action, confirm_reset: confirmReset })
+      });
+      const data = await res.json();
+
+      if (data.status === 'guard_veto') {
+        appendMessage('gm', `[Guard veto] ${data.message}`);
+      } else if (data.status === 'world_veto') {
+        appendMessage('gm', `[World veto] ${data.message}`);
+      } else {
+        appendMessage('gm', data.message || 'No response.');
+      }
+    }
+
+    document.getElementById('send').addEventListener('click', async () => {
+      const action = actionInput.value;
+      actionInput.value = '';
+      await sendAction(action);
+    });
+
+    actionInput.addEventListener('keydown', async (e) => {
+      if (e.key === 'Enter') {
+        const action = actionInput.value;
+        actionInput.value = '';
+        await sendAction(action);
+      }
+    });
+
+    document.getElementById('reset').addEventListener('click', async () => {
+      const ok = window.confirm('Reset memory from template?');
+      if (!ok) return;
+      await sendAction('reset', true);
+    });
+
+    appendMessage('gm', 'Web GM ready. Enter an action to begin.');
+  </script>
+</body>
+</html>
