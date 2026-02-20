@@ -40,7 +40,7 @@ def ollama_generate(system_prompt: str, user_prompt: str, model: str = DEFAULT_M
         return str(parsed.get("response", "")).strip()
     except urllib.error.URLError as exc:
         return (
-            "{\"error\": \"Ollama unavailable\", "
+            "{\"error\": \"Ollama indisponible\", "
             f"\"details\": {json.dumps(str(exc))}"
             "}"
         )
@@ -69,18 +69,18 @@ class Orchestrator:
         state = self.memory.load()
         trimmed = action.strip()
         if not trimmed:
-            return {"status": "empty", "message": "Please enter an action."}
+            return {"status": "empty", "message": "Veuillez saisir une action."}
 
         if self._action_is_reset(trimmed):
             if not confirm_reset:
                 return {
                     "status": "reset_confirmation_required",
-                    "message": "Type RESET to confirm memory reset.",
+                    "message": "Tapez RESET pour confirmer la réinitialisation de la mémoire.",
                 }
             state = self.memory.reset_from_template(self.template_path)
             return {
                 "status": "reset_done",
-                "message": "Memory reset complete.",
+                "message": "Réinitialisation de la mémoire terminée.",
                 "observable": self.memory.get_observable_context(state),
             }
 
@@ -97,7 +97,7 @@ class Orchestrator:
             self.memory.save(state)
             return {
                 "status": "guard_veto",
-                "message": guard_result.get("reason", "Action rejected."),
+                "message": guard_result.get("reason", "Action refusée."),
                 "guard": guard_result,
                 "observable": observable,
             }
@@ -122,7 +122,7 @@ class Orchestrator:
             self.memory.save(state)
             return {
                 "status": "world_veto",
-                "message": world_result.get("reason", "Action is implausible."),
+                "message": world_result.get("reason", "Action invraisemblable."),
                 "guard": guard_result,
                 "world": world_result,
                 "observable": observable,
@@ -164,21 +164,21 @@ class Orchestrator:
         }
 
     def run(self) -> None:
-        print("Local GM prototype started. Type 'quit' to exit.")
+        print("Prototype GM local démarré. Tapez 'quit' pour quitter.")
 
         while True:
-            print("\nWhat do you do?")
+            print("\nQue faites-vous ?")
             action = input("> ").strip()
             if not action:
                 continue
             if action.lower() in {"quit", "exit"}:
                 state = self.memory.load()
                 self.memory.save(state)
-                print("Game saved. Goodbye.")
+                print("Partie sauvegardée. Au revoir.")
                 break
 
             if self._action_is_reset(action):
-                confirmation = input("Type RESET to confirm memory reset: ").strip()
+                confirmation = input("Tapez RESET pour confirmer la réinitialisation : ").strip()
                 result = self.handle_action(action, confirm_reset=confirmation.upper() == "RESET")
                 print(result.get("message", ""))
                 continue
@@ -186,13 +186,13 @@ class Orchestrator:
             result = self.handle_action(action)
             status = result.get("status")
             if status == "guard_veto":
-                print(f"\n[Guard veto] {result.get('message', 'Action rejected.')}")
+                print(f"\n[Veto Garde] {result.get('message', 'Action refusée.')}")
             elif status == "world_veto":
-                print(f"\n[World veto] {result.get('message', 'Action is implausible.')}")
+                print(f"\n[Veto Monde] {result.get('message', 'Action invraisemblable.')}")
             elif status == "resolved":
                 print(f"\n{result.get('message', '')}")
             else:
-                print(result.get("message", "No output."))
+                print(result.get("message", "Aucune sortie."))
 
     def _apply_effects(
         self,

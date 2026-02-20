@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GameJee Web GM</title>
+  <title>GameJee GM Web</title>
   <style>
     body { font-family: Arial, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; background: #111827; color: #e5e7eb; }
     .card { background: #1f2937; border: 1px solid #374151; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
@@ -19,16 +19,16 @@
 </head>
 <body>
   <h1>GameJee — Web Interface</h1>
-  <p class="meta">Discuss with the GM from your browser (local server).</p>
+  <p class="meta">Discutez avec le GM depuis votre navigateur (serveur local).</p>
 
   <div class="card">
     <div id="chat"></div>
   </div>
 
   <div class="card">
-    <input id="action" type="text" placeholder="What do you do?" />
-    <button id="send">Send</button>
-    <button id="reset" style="background:#b91c1c;">Reset Memory</button>
+    <input id="action" type="text" placeholder="Que faites-vous ?" />
+    <button id="send">Envoyer</button>
+    <button id="reset" style="background:#b91c1c;">Réinitialiser la mémoire</button>
   </div>
 
   <script>
@@ -54,11 +54,11 @@
       const data = await res.json();
 
       if (data.status === 'guard_veto') {
-        appendMessage('gm', `[Guard veto] ${data.message}`);
+        appendMessage('gm', `[Veto Garde] ${data.message}`);
       } else if (data.status === 'world_veto') {
-        appendMessage('gm', `[World veto] ${data.message}`);
+        appendMessage('gm', `[Veto Monde] ${data.message}`);
       } else {
-        appendMessage('gm', data.message || 'No response.');
+        appendMessage('gm', data.message || 'Pas de réponse.');
       }
     }
 
@@ -77,12 +77,12 @@
     });
 
     document.getElementById('reset').addEventListener('click', async () => {
-      const ok = window.confirm('Reset memory from template?');
+      const ok = window.confirm('Réinitialiser la mémoire depuis le template ?');
       if (!ok) return;
       await sendAction('reset', true);
     });
 
-    appendMessage('gm', 'Web GM ready. Enter an action to begin.');
+    appendMessage('gm', 'GM Web prêt. Saisissez une action pour commencer.');
   </script>
 </body>
 </html>

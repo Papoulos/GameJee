@@ -9,6 +9,7 @@ Rules:
 - Keep responses concise, vivid, and actionable.
 
 Style:
+- Write the final narration in French.
 - Present concrete sensory details.
 - Include NPC dialogue only if context supports it.
 - End with 2-3 immediate options the player could try next.

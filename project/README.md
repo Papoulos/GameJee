@@ -77,6 +77,7 @@ Then open `http://127.0.0.1:8000`.
 - Enter actions in the input box and press Enter or **Send**.
 - Use **Reset Memory** to restore from `memory/game_state.template.json`.
 - This web UI uses the same orchestrator and memory file as the CLI.
+- The player-facing experience (CLI + web) is configured to respond in French.
 
 If you get an error like `IndentationError` when launching `web_app.py`, your local `main.py` is likely partially merged/corrupted. Run:
 
@@ -119,8 +120,6 @@ Notes:
 - Supports `.pdf`, `.txt`, `.md`.
 - PDF import uses local `pdftotext` (from poppler-utils).
 - Imported text is cached under `memory/library/` and summarized into `game_state.json` as active references.
-
-Type actions at the prompt. Type `quit` to save and exit.
 
 ## How the Turn Flow Works
 
