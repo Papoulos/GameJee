@@ -120,6 +120,8 @@ Notes:
 - PDF import uses local `pdftotext` (from poppler-utils).
 - Imported text is cached under `memory/library/` and summarized into `game_state.json` as active references.
 
+Type actions at the prompt. Type `quit` to save and exit.
+
 ## How the Turn Flow Works
 
 1. Orchestrator loads full state from Memory Agent.
